@@ -13,7 +13,7 @@ export default function PlaylistDetails() {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+   
   useEffect(() => {
     const fetchPlaylistDetails = async () => {
       try {

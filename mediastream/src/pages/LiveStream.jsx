@@ -12,7 +12,7 @@ export default function LiveStream() {
   const [isStartingStream, setIsStartingStream] = useState(false);
 
   useEffect(() => {
-    const fetchLiveStreams = async () => {
+    const fetchLiveStreams = async () => {  
       try {
         const response = await axios.get(`${BASE_URL_LIVESTREAM}${LIVESTREAM_LIST}`);
         setLiveStreams(response.data);

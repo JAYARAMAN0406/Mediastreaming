@@ -9,7 +9,7 @@ export default function PlaylistForm({ onSuccess }) {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault();  
     setLoading(true);
 
     const formData = new FormData();

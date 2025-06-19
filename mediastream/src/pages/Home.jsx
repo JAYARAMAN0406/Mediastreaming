@@ -13,7 +13,7 @@ export default function Home() {
 
   const videoRowRef = useRef(null);
   const audioRowRef = useRef(null);
-  const playRowRef = useRef(null);
+  const playRowRef = useRef(null);  
 
   const videos = mediaItems.filter((item) => item.type.includes("video"));
   const audios = mediaItems.filter((item) => item.type.includes("audio"));

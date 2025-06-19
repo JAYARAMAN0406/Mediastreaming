@@ -14,7 +14,7 @@ export default function Playlists() {
       setLoading(true);
       const response = await axios.get(`${BASE_URL_PLAYLIST}${PLAYLIST_LIST}`);
       setMediaItems(response.data);
-      setError(null);
+      setError(null);   
     } catch {
       setError("Failed to load media items");
     } finally {

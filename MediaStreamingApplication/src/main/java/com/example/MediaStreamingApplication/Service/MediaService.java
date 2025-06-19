@@ -4,14 +4,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
+import java.time.LocalDate;   
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -259,7 +261,7 @@ public class MediaService {
 	    // Method to extract a thumbnail from the video
 	    public String extractThumbnail(String videoPath, String thumbnailFilename) throws IOException, InterruptedException {
 	        String ffmpegPath = "C:\\ffmpeg\\ffmpeg-master-latest-win64-gpl-shared\\bin\\ffmpeg.exe";
-	        String thumbnailPath = Paths.get("E:\\Volumes", thumbnailFilename).toString();
+	        String thumbnailPath = Paths.get("E:\\jayaraman\\Volumes", thumbnailFilename).toString();
 
 	        // Construct and log the FFmpeg command
 	        ProcessBuilder processBuilder = new ProcessBuilder(
@@ -288,10 +290,10 @@ public class MediaService {
 	    }
 
 	    
-	    public ResponseEntity<Resource> streamMedia(String filename) {
+	    public ResponseEntity<Resource> streamMedia(String filename, HttpHeaders headers) {
 	        try {
 	            // Define the file path
-	            Path filePath = Paths.get("E:\\Volumes").resolve(filename);
+	            Path filePath = Paths.get("E:\\jayaraman\\Volumes").resolve(filename);
 	            Resource resource = new UrlResource(filePath.toUri());
 
 	            // Check if file exists and is readable
@@ -300,13 +302,41 @@ public class MediaService {
 	            }
 
 	            // Get file content type
+	            long fileSize = Files.size(filePath);
 	            String contentType = Files.probeContentType(filePath);
+	            if (contentType == null) {
+	                contentType = "application/octet-stream";
+	            }
 
-	            return ResponseEntity.ok()
-	                    .header(HttpHeaders.CONTENT_TYPE, contentType)
-	                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(Files.size(filePath)))
-	                    .body(resource);
+	            // Support for range header
+	            String range = headers.getFirst(HttpHeaders.RANGE);
+	            if (range != null) {
+	                long start, end;
+	                String[] ranges = range.replace("bytes=", "").split("-");
+	                start = Long.parseLong(ranges[0]);
+	                end = ranges.length > 1 ? Long.parseLong(ranges[1]) : fileSize - 1;
 
+	                if (end >= fileSize) end = fileSize - 1;
+
+	                long contentLength = end - start + 1;
+	                InputStream inputStream = Files.newInputStream(filePath);
+	                inputStream.skip(start);
+
+	                HttpHeaders responseHeaders = new HttpHeaders();
+	                responseHeaders.setContentType(MediaType.parseMediaType(contentType));
+	                responseHeaders.set(HttpHeaders.CONTENT_LENGTH, String.valueOf(contentLength));
+	                responseHeaders.set(HttpHeaders.CONTENT_RANGE, "bytes " + start + "-" + end + "/" + fileSize);
+	                responseHeaders.set(HttpHeaders.ACCEPT_RANGES, "bytes");
+
+	                return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+	                        .headers(responseHeaders)
+	                        .body(new InputStreamResource(inputStream));
+	            } else {
+	                return ResponseEntity.ok()
+	                        .contentType(MediaType.parseMediaType(contentType))
+	                        .contentLength(fileSize)
+	                        .body(resource);
+	            }
 	        } catch (IOException e) {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	        }
@@ -314,7 +344,7 @@ public class MediaService {
 	    
 	    public ResponseEntity<Resource> streamAudio(String filename) {
 	        try {
-	            Path filePath = Paths.get("E:\\Volumes", filename).normalize();
+	            Path filePath = Paths.get("E:\\jayaraman\\Volumes", filename).normalize();
 	            if (!Files.exists(filePath)) {
 	                throw new FileNotFoundException("File not found: " + filename);
 	            }
@@ -359,8 +389,12 @@ public class MediaService {
 	    }
 
 	    private void deleteFileFromLocalStorage(String filename) throws IOException {
-	        Path path = Paths.get("E:\\Volumes").resolve(filename);
+	        Path path = Paths.get("E:\\jayaraman\\Volumes").resolve(filename);
 	        Files.deleteIfExists(path); // Safely delete the file if it exists
 	    }
 
+
+
+		
+		
 }

@@ -3,18 +3,25 @@ import { Play, ChevronLeft, ChevronRight } from "lucide-react";
 import axios from "axios";
 import MediaPlayer from "../components/MediaPlayer";
 import { BASE_URL_MEDIA, MEDIA_LIST } from "../utils/ApplicationRouting";
+import VideoModal from "../components/VideoModal";
 
 export default function Media() {
   const [mediaItems, setMediaItems] = useState([]);
   const [selectedMedia, setSelectedMedia] = useState(null);
+  const [selectedFilename, setSelectedFilename] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(null);   
 
   const videoRowRef = useRef(null);
   const audioRowRef = useRef(null);
 
-  const videos = mediaItems.filter((item) => item.type.includes("video"));
-  const audios = mediaItems.filter((item) => item.type.includes("audio"));
+  const videos = mediaItems.filter(
+  (item) => item && typeof item.type === 'string' && item.type.includes("video")
+);
+
+const audios = mediaItems.filter(
+  (item) => item && typeof item.type === 'string' && item.type.includes("audio")
+);
 
   useEffect(() => {
     const fetchMedia = async () => {
@@ -31,9 +38,10 @@ export default function Media() {
     fetchMedia();
   }, []);
 
-  const handlePlay = (media) => {
-    setSelectedMedia(media);
-  };
+ const handlePlay = (media) => {
+  setSelectedMedia(media)
+};
+
 
   const scrollRow = (ref, direction) => {
     if (ref.current) {
@@ -48,7 +56,7 @@ export default function Media() {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="h-screen w-screen scrollbar-hide overflow-auto md:max-w-3xl lg:max-w-5xl mx-auto p-0 md:p-6 sm:p-6">
+       <div className="h-screen w-screen scrollbar-hide overflow-auto md:max-w-3xl lg:max-w-5xl mx-auto p-0 md:p-4 sm:p-4">
       <h1 className="text-2xl font-bold mb-6 text-center md:text-left">All Media</h1>
 
       {/* Video Row */}
@@ -80,11 +88,13 @@ export default function Media() {
                     className="w-full h-full object-cover"
                   />
                   <div
-                    className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
-                    onClick={() => handlePlay(media)}
-                  >
-                    <Play className="w-8 h-8 text-white" />
-                  </div>
+  className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
+ 
+>
+  <Play className="w-8 h-8 text-white"  onClick={() => handlePlay(media)} />
+   
+</div>
+
                 </div>
                 <div className="p-2">
                   <h3 className="font-semibold text-sm">{media.title}</h3>
@@ -95,13 +105,47 @@ export default function Media() {
 
           {/* Right Chevron */}
           <button
-            className="absolute right-6 top-1/2 transform -translate-y-1/2 z-10 p-2 bg-gray-200 rounded-full hover:bg-gray-300 shadow-md"
+            className="absolute right-1 top-1/2 transform -translate-y-1/2 z-10 p-2 bg-gray-200 rounded-full hover:bg-gray-300 shadow-md"
             onClick={() => scrollRow(videoRowRef, "right")}
           >
             <ChevronRight size={24} />
           </button>
         </div>
       </div>
+{selectedMedia && (
+ 
+  <MediaPlayer
+    key={selectedMedia.id} // 👈 important to force re-render
+    media={selectedMedia}
+    onClose={() => setSelectedMedia(null)}
+    onNext={() => {
+      const currentIndex = mediaItems.findIndex((m) => m.id === selectedMedia.id);
+      for (let i = currentIndex + 1; i < mediaItems.length; i++) {
+        const item = mediaItems[i];
+        if (item.type === 'video/mp4') {
+          setSelectedMedia(item);
+    return
+        }else if (item.contentType === 'audio/mp3') {
+          setSelectedMedia(item);
+        return 
+        }
+      }
+    }}
+    onPrevious={() => {
+      const currentIndex = mediaItems.findIndex((m) => m.id === selectedMedia.id);
+      for (let i = currentIndex - 1; i >= 0; i--) {
+        const item = mediaItems[i];
+        if (item.type === 'video/mp4' || item.type === 'audio/mp3') {
+          setSelectedMedia(item);
+          break;
+        }
+      }
+    }}
+  />
+
+)}
+
+
 
       {/* Audio Row */}
       <div>
@@ -147,13 +191,15 @@ export default function Media() {
 
           {/* Right Chevron */}
           <button
-            className="absolute right-6 top-1/2 transform -translate-y-1/2 z-10 p-2 bg-gray-200 rounded-full hover:bg-gray-300 shadow-md"
+            className="absolute right-1 top-1/2 transform -translate-y-1/2 z-10 p-2 bg-gray-200 rounded-full hover:bg-gray-300 shadow-md"
             onClick={() => scrollRow(audioRowRef, "right")}
           >
             <ChevronRight size={24} />
           </button>
         </div>
       </div>
+      
+
     </div>
   );
 }

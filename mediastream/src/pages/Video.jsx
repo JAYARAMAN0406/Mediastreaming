@@ -17,7 +17,7 @@ export default function Video() {
       try {
         const response = await axios.get(`${BASE_URL_MEDIA}${MEDIA_LIST_VIDEO}`);
         setMediaItems(response.data);
-        setLoading(false);
+        setLoading(false);   
       } catch (err) {
         setError("Failed to load media items");
         setLoading(false);

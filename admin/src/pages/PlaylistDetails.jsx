@@ -11,7 +11,7 @@ export default function PlaylistDetails() {
   const [playlist, setPlaylist] = useState([]);
   const [play, setPlay] = useState(null);
   const [selectedMedia, setSelectedMedia] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);  
   const [error, setError] = useState(null);
 
    const videoRowRef = useRef(null);

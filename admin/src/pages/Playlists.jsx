@@ -12,7 +12,7 @@ export default function Playlists() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const fetchMedia = async () => {
+  const fetchMedia = async () => {   
     try {
       setLoading(true);
       const response = await axios.get(`${BASE_URL_PLAYLIST}${PLAYLIST_LIST}`);

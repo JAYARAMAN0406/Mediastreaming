@@ -2,6 +2,7 @@ package com.example.MediaStreamingApplication.Controller;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import org.springframework.http.HttpHeaders;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,8 +47,8 @@ public class MediaController {
 	   
 
 	        @GetMapping("/stream/{filename}")
-	        public ResponseEntity<Resource> streamMedia(@PathVariable String filename) {
-	            return mediaService.streamMedia(filename);
+	        public ResponseEntity<Resource> streamMedia(@PathVariable String filename, @RequestHeader HttpHeaders headers) {
+	            return mediaService.streamMedia(filename,headers);
 	        }
 	    
 	        @GetMapping("/streamaudio/{filename}")
@@ -154,7 +156,7 @@ public class MediaController {
 	    @GetMapping("/thumbnails/{filename}")
 	    public ResponseEntity<Resource> getThumbnail(@PathVariable String filename) {
 	        try {
-	            Path filePath = Paths.get("E:\\Volumes").resolve(filename).normalize();
+	            Path filePath = Paths.get("E:\\jayaraman\\Volumes").resolve(filename).normalize();
 	            Resource resource = new UrlResource(filePath.toUri());
 	            if (resource.exists()) {
 	                return ResponseEntity.ok()
