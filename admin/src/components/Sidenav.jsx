@@ -19,9 +19,9 @@ export default function Sidenav() {
 
       {/* Sidenav */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-gray-900 text-white p-4 transform transition-transform z-50 ${
+        className={`fixed top-0 left-0 h-full w-54 bg-gray-900 text-white p-4 transform transition-transform z-50 ${
           isMenuOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 lg:static lg:w-64`}
+        } lg:translate-x-0 lg:static lg:w-full`}
       >
         {/* Header with Close Button */}
         <div className="flex justify-between items-center mb-8 lg:block">

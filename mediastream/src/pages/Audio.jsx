@@ -38,7 +38,7 @@ export default function Audio() {
     <div className="p-4 max-w-5xl mx-auto flex flex-col items-center">
       <h1 className="text-2xl font-bold mb-6 text-center">Music</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 justify-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center">
         {audios.map((media) => (
           <div
             className="bg-white rounded-lg shadow-md overflow-hidden flex-none w-full sm:w-48"
